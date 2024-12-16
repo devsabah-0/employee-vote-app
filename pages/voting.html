@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee of the Month Voting</title>
+    <link rel="stylesheet" href="../public/styles.css">
+</head>
+<body>
+    <h1>Employee of the Month Voting</h1>
+    <div id="participantList" class="container"></div>
+
+    <script>
+        async function loadParticipants() {
+            try {
+                const response = await fetch('/participants.json');
+                const participants = await response.json();
+                const participantList = document.getElementById('participantList');
+                
+                participants.forEach((participant, index) => {
+                    const participantCard = document.createElement('div');
+                    participantCard.className = 'card';
+                    participantCard.innerHTML = `
+                        <img src="https://via.placeholder.com/100" alt="Employee Image" class="candidate-image">
+                        <h3>${participant.name}</h3>
+                        <p>${participant.designation}</p>
+                        <p class="review">${participant.review}</p>
+                        <button data-index="${index}">Vote</button>
+                    `;
+                    participantList.appendChild(participantCard);
+                });
+
+                document.querySelectorAll('button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const participantIndex = button.getAttribute('data-index');
+                        const selectedParticipant = participants[participantIndex];
+                        alert(`Vote submitted for ${selectedParticipant.name}`);
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading participants:', error);
+            }
+        }
+
+        loadParticipants();
+    </script>
+</body>
+</html>

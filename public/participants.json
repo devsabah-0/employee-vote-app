@@ -1,0 +1,21 @@
+[
+    {
+      "name": "Ahmed",
+      "designation": "Software Engineer",
+      "department": "IT",
+      "review": "John has consistently exceeded expectations and is a strong team player."
+    },
+    {
+      "name": "Alex",
+      "designation": "Marketing Manager",
+      "department": "Marketing",
+      "review": "Jane has a knack for creative strategies and achieving remarkable milestones."
+    },
+    {
+      "name": "Samooh",
+      "designation": "Project Manager",
+      "department": "Operations",
+      "review": "Emily excels in leadership, consistently delivering successful projects on time."
+    }
+  ]
+  

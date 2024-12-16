@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Votes</title>
+    <link rel="stylesheet" href="../public/styles.css">
+</head>
+<body>
+    <h1>Votes Overview</h1>
+    <div id="votesContainer" class="container"></div>
+
+    <script>
+        async function loadVotes() {
+            try {
+                const response = await fetch('/participants.json');
+                const participants = await response.json();
+                const votesContainer = document.getElementById('votesContainer');
+
+                participants.forEach(participant => {
+                    // Assuming a vote count is stored or mocked
+                    const votes = Math.floor(Math.random() * 100); // Replace with actual logic
+                    const participantEntry = document.createElement('div');
+                    participantEntry.className = 'card';
+                    participantEntry.innerHTML = `
+                        <h3>${participant.name} - ${votes} Votes</h3>
+                        <p>Designation: ${participant.designation}</p>
+                        <p>Department: ${participant.department}</p>
+                        <p class="review">${participant.review}</p>
+                    `;
+                    votesContainer.appendChild(participantEntry);
+                });
+            } catch (error) {
+                console.error('Error loading votes:', error);
+            }
+        }
+
+        loadVotes();
+    </script>
+</body>
+</html>
