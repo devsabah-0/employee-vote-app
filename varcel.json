@@ -1,6 +1,7 @@
 {
     "public": "public",
     "rewrites": [
+      { "source": "/index", "destination": "/index.html" },
       { "source": "/voting", "destination": "/voting.html" },
       { "source": "/admin", "destination": "/admin.html" },
       { "source": "/manage", "destination": "/manage.html" }
