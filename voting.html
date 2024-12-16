@@ -97,53 +97,40 @@
     <div id="participantList"></div>
 
     <script>
-        const loadParticipants = () => {
-            fetch('http://localhost:3000/participants')
-                .then(response => response.json())
-                .then(participants => {
-                    const participantList = document.getElementById('participantList');
-                    participantList.innerHTML = '';
-                    participants.forEach((participant, index) => {
-                        const participantCard = document.createElement('div');
-                        participantCard.className = 'participant-card';
-                        participantCard.innerHTML = `
-                            <img src="https://www.sunsiyam.com/assets/img/logo-circle.svg" alt="Employee Image" class="candidate-image">
-                            <h3>${participant.name}</h3>
-                            <p>${participant.designation}</p>
-                            <p class="review">${participant.review}</p>
-                            <button class="vote-button" data-index="${index}">Vote</button>
-                        `;
-                        participantList.appendChild(participantCard);
-                    });
+        const loadParticipants = async () => {
+            const response = await fetch('participants.json');
+            const participants = await response.json();
+            const participantList = document.getElementById('participantList');
+            participantList.innerHTML = '';
 
-                    document.querySelectorAll('.vote-button').forEach(button => {
-                        button.addEventListener('click', (event) => {
-                            const participantIndex = button.getAttribute('data-index');
-                            const selectedParticipant = participants[participantIndex];
-                            submitVote(selectedParticipant);
-                        });
-                    });
-                }).catch(error => console.error('Error:', error));
+            participants.forEach((participant, index) => {
+                const participantCard = document.createElement('div');
+                participantCard.className = 'participant-card';
+                participantCard.innerHTML = `
+                    <img src="https://www.sunsiyam.com/assets/img/logo-circle.svg" alt="Employee Image" class="candidate-image">
+                    <h3>${participant.name}</h3>
+                    <p>${participant.designation}</p>
+                    <p class="review">${participant.review}</p>
+                    <button class="vote-button" data-index="${index}">Vote</button>
+                `;
+                participantList.appendChild(participantCard);
+            });
+
+            document.querySelectorAll('.vote-button').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const participantIndex = button.getAttribute('data-index');
+                    const selectedParticipant = participants[participantIndex];
+                    submitVote(selectedParticipant);
+                });
+            });
         };
 
         const submitVote = (participant) => {
-            fetch('http://localhost:3000/vote', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name: participant.name,
-                    employee: participant.designation
-                })
-            })
-            .then(response => response.text())
-            .then(data => alert(data))
-            .catch(error => console.error('Error:', error));
+            alert(`Vote submitted for ${participant.name}`);
         };
 
         // Load participants initially
-        loadParticipants();
+        loadParticipants().catch(error => console.error('Error loading participants:', error));
     </script>
 </body>
 </html>
