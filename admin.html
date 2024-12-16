@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Votes</title>
-    <link rel="stylesheet" href="../public/styles.css">
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <h1>Votes Overview</h1>
@@ -16,10 +16,10 @@
                 const response = await fetch('/participants.json');
                 const participants = await response.json();
                 const votesContainer = document.getElementById('votesContainer');
+                votesContainer.innerHTML = '';
 
                 participants.forEach(participant => {
-                    // Assuming a vote count is stored or mocked
-                    const votes = Math.floor(Math.random() * 100); // Replace with actual logic
+                    const votes = Math.floor(Math.random() * 100); // Mock vote count
                     const participantEntry = document.createElement('div');
                     participantEntry.className = 'card';
                     participantEntry.innerHTML = `
