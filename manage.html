@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Participants</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .input-group {
+            margin: 20px 0;
+            max-width: 600px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        input[type="text"], textarea {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            background-color: #0069d9;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #participantsContainer {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .participant-entry {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .participant-details {
+            flex-grow: 1;
+            line-height: 1.5;
+        }
+
+        .participant-details strong {
+            display: block;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .show-btn {
+            background-color: #28a745;
+            margin-left: 10px;
+        }
+
+        .show-btn:hover {
+            background-color: #218838;
+        }
+
+        @media (max-width: 768px) {
+            .participant-details {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Manage Participants</h1>
+    <div class="input-group">
+        <h2>Add Participant</h2>
+        <input type="text" id="participantName" placeholder="Name">
+        <input type="text" id="participantDesignation" placeholder="Designation">
+        <input type="text" id="participantDepartment" placeholder="Department">
+        <textarea id="participantReview" placeholder="Review" rows="4"></textarea>
+        <button id="addParticipantBtn">Add Participant</button>
+    </div>
+    <div class="input-group">
+        <h2>Remove Participant</h2>
+        <input type="text" id="removeParticipantName" placeholder="Name">
+        <button id="removeParticipantBtn">Remove Participant</button>
+    </div>
+    <h2>Current Participants</h2>
+    <div id="participantsContainer"></div>
+
+    <script>
+        document.getElementById('addParticipantBtn').addEventListener('click', function() {
+            const name = document.getElementById('participantName').value;
+            const designation = document.getElementById('participantDesignation').value;
+            const department = document.getElementById('participantDepartment').value;
+            const review = document.getElementById('participantReview').value;
+
+            fetch('http://localhost:3000/add-participant', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, designation, department, review })
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                loadParticipants(); // Refresh participant list
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('removeParticipantBtn').addEventListener('click', function() {
+            const name = document.getElementById('removeParticipantName').value;
+            
+            fetch('http://localhost:3000/remove-participant', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                loadParticipants(); // Refresh participant list
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        function loadParticipants() {
+            fetch('http://localhost:3000/participants', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(participants => {
+                const container = document.getElementById('participantsContainer');
+                container.innerHTML = '';
+                participants.forEach(participant => {
+                    const div = document.createElement('div');
+                    div.className = 'participant-entry';
+                    div.innerHTML = `
+                        <div class="participant-details">
+                            <strong>${participant.name}</strong>
+                            <div>${participant.designation}</div>
+                            <div>${participant.department}</div>
+                            <div>${participant.review}</div>
+                        </div>
+                        <button class="show-btn">Show Review</button>
+                    `;
+                    div.querySelector('.show-btn').addEventListener('click', () => {
+                        alert(participant.review);
+                    });
+                    container.appendChild(div);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Load participants initially
+        loadParticipants();
+    </script>
+</body>
+</html>

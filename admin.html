@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Votes</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #votesContainer {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .participant-entry {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .participant-info {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .votes-box {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+            width: 80px;
+        }
+
+        .highest-votes {
+            background-color: #d4edda; /* light green background */
+            border-color: #c3e6cb; /* dark green border */
+            box-shadow: 0 0 10px #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>View Votes</h1>
+    <button id="viewVotesBtn">View Votes</button>
+    <div id="votesContainer"></div>
+
+    <script>
+        document.getElementById('viewVotesBtn').addEventListener('click', function() {
+            fetch('http://localhost:3000/votes', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(participants => {
+                const votesContainer = document.getElementById('votesContainer');
+                votesContainer.innerHTML = '';
+                
+                // Determine the highest vote count
+                const maxVotes = Math.max(...participants.map(p => p.votes));
+
+                participants.forEach(participant => {
+                    const div = document.createElement('div');
+                    div.className = 'participant-entry';
+
+                    const participantInfo = document.createElement('div');
+                    participantInfo.className = 'participant-info';
+                    participantInfo.innerHTML = `
+                        <strong>${participant.name}</strong>
+                        <div>${participant.designation}</div>
+                        <div>${participant.department}</div>
+                        <div>${participant.review}</div>
+                    `;
+
+                    const voteCountBox = document.createElement('div');
+                    voteCountBox.className = 'votes-box';
+                    voteCountBox.textContent = `${participant.votes} votes`;
+
+                    // Highlight the box if this participant has the highest vote count
+                    if (participant.votes === maxVotes) {
+                        voteCountBox.classList.add('highest-votes');
+                    }
+
+                    div.appendChild(participantInfo);
+                    div.appendChild(voteCountBox);
+                    votesContainer.appendChild(div);
+                });
+            })
+            .catch(error => alert('Error fetching votes: ' + error.message));
+        });
+    </script>
+</body>
+</html>
