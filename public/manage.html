@@ -1,0 +1,23 @@
+<!-- public/manage.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Participants</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Manage Participants</h1>
+    <form id="participant-form" enctype="multipart/form-data">
+        <input type="text" id="name" name="name" placeholder="Name" required>
+        <input type="text" id="designation" name="designation" placeholder="Designation" required>
+        <input type="text" id="department" name="department" placeholder="Department" required>
+        <textarea id="review" name="review" placeholder="Review" required></textarea>
+        <input type="file" id="image" name="image" accept=".svg" required>
+        <button type="submit">Add Participant</button>
+    </form>
+    <ul id="participant-list"></ul>
+    <script src="manage.js"></script>
+</body>
+</html>
