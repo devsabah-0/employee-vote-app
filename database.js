@@ -9,7 +9,8 @@ db.serialize(() => {
         designation TEXT NOT NULL,
         department TEXT NOT NULL,
         review TEXT NOT NULL,
-        imagePath TEXT NOT NULL
+        imagePath TEXT NOT NULL,
+        votes INTEGER DEFAULT 0
     )`);
 });
 
