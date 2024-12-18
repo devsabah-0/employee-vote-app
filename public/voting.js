@@ -1,4 +1,4 @@
-// public/votes.js
+// public/voting.js
 document.addEventListener('DOMContentLoaded', () => {
     const pollsContainer = document.getElementById('polls-container');
 
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     pollDiv.innerHTML = `
                         <div class="poll-header">
                             <h2>${poll.name}</h2>
-                            <button class="toggle-button" onclick="togglePoll(${poll.id})">+</button>
+                            <button class="collapse-button" onclick="toggleParticipants(${poll.id})">+</button>
                         </div>
                         <div id="participants-${poll.id}" class="participants" style="display: none;"></div>
                     `;
@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     };
 
-    window.togglePoll = (pollId) => {
+    window.toggleParticipants = (pollId) => {
         const participantsDiv = document.getElementById(`participants-${pollId}`);
-        const toggleButton = participantsDiv.previousElementSibling.querySelector('.toggle-button');
+        const toggleButton = participantsDiv.previousElementSibling.querySelector('.collapse-button');
         if (participantsDiv.style.display === 'none') {
             loadParticipants(pollId);
             participantsDiv.style.display = 'block';
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p class="designation">${participant.designation}</p>
                             <p class="department">${participant.department}</p>
                             <p class="review">${participant.review}</p>
-                            <p class="vote-count">Votes: ${participant.votes}</p>
+                            <button class="vote-button" onclick="vote(${pollId}, ${participant.id})">Vote</button>
                         </div>
                     `;
                     participantsDiv.appendChild(participantCard);
@@ -62,6 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
                 console.error('Error loading participants:', error);
+            });
+    };
+
+    window.vote = (pollId, participantId) => {
+        fetch(`/polls/${pollId}/participants/${participantId}/vote`, { method: 'PUT' })
+            .then(() => loadParticipants(pollId))
+            .catch(error => {
+                console.error('Error voting:', error);
             });
     };
 

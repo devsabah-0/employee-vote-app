@@ -1,11 +1,51 @@
 // public/manage.js
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('participant-form');
+    const pollForm = document.getElementById('poll-form');
+    const pollSelector = document.getElementById('poll-selector');
+    const participantManagement = document.getElementById('participant-management');
+    const participantForm = document.getElementById('participant-form');
     const participantList = document.getElementById('participant-list');
     const toggleVotingButton = document.getElementById('toggle-voting');
+    let currentPollId = null;
 
-    const loadParticipants = () => {
-        fetch('/participants')
+    const loadPolls = () => {
+        fetch('/polls')
+            .then(response => response.json())
+            .then(data => {
+                pollSelector.innerHTML = '<option value="">Select a poll to manage</option>';
+                data.forEach(poll => {
+                    const option = document.createElement('option');
+                    option.value = poll.id;
+                    option.textContent = poll.name;
+                    pollSelector.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading polls:', error);
+            });
+    };
+
+    const addPoll = (event) => {
+        event.preventDefault();
+        const pollName = document.getElementById('poll-name').value;
+
+        fetch('/polls', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: pollName })
+        })
+        .then(response => response.json())
+        .then(() => {
+            pollForm.reset();
+            loadPolls();
+        })
+        .catch(error => {
+            console.error('Error creating poll:', error);
+        });
+    };
+
+    const loadParticipants = (pollId) => {
+        fetch(`/polls/${pollId}/participants`)
             .then(response => response.json())
             .then(data => {
                 participantList.innerHTML = '';
@@ -14,12 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     li.innerHTML = `
                         <img src="${participant.imagePath}" alt="${participant.name}" class="participant-image">
                         ${participant.name} - ${participant.designation} (${participant.department})
+                        <button class="delete-button" onclick="deleteParticipant(${pollId}, ${participant.id})">Delete</button>
                     `;
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'Delete';
-                    deleteButton.className = 'delete-button';
-                    deleteButton.onclick = () => deleteParticipant(participant.id);
-                    li.appendChild(deleteButton);
                     participantList.appendChild(li);
                 });
             })
@@ -30,60 +66,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const addParticipant = (event) => {
         event.preventDefault();
-        const formData = new FormData(form);
+        if (!currentPollId) return;
 
-        fetch('/participants', {
+        const formData = new FormData(participantForm);
+        fetch(`/polls/${currentPollId}/participants`, {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
         .then(() => {
-            form.reset();
-            loadParticipants();
+            loadParticipants(currentPollId);
         })
         .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
+            console.error('Error adding participant:', error);
         });
     };
 
-    const deleteParticipant = (id) => {
-        fetch(`/participants/${id}`, { method: 'DELETE' })
-            .then(() => loadParticipants())
+    const deleteParticipant = (pollId, participantId) => {
+        fetch(`/polls/${pollId}/participants/${participantId}`, { method: 'DELETE' })
+            .then(() => loadParticipants(pollId))
             .catch(error => {
                 console.error('Error deleting participant:', error);
             });
     };
 
     const toggleVoting = () => {
-        fetch('/toggle-voting', { method: 'POST' })
+        if (!currentPollId) return;
+
+        fetch(`/polls/${currentPollId}/toggle-voting`, { method: 'PUT' })
             .then(response => response.json())
             .then(data => {
-                updateToggleButton(data.votingOpen);
+                toggleVotingButton.textContent = data.votingOpen ? 'Vote Stop' : 'Vote Start';
+                toggleVotingButton.style.backgroundColor = data.votingOpen ? 'green' : 'red';
             })
             .catch(error => {
                 console.error('Error toggling voting:', error);
             });
     };
 
-    const updateToggleButton = (votingOpen) => {
-        toggleVotingButton.textContent = votingOpen ? 'Vote Stop' : 'Vote Start';
-        toggleVotingButton.style.backgroundColor = votingOpen ? 'green' : 'red';
-        toggleVotingButton.style.boxShadow = votingOpen ? '0 0 10px green' : '0 0 10px red';
-    };
+    pollSelector.addEventListener('change', (event) => {
+        currentPollId = event.target.value;
+        if (currentPollId) {
+            participantManagement.style.display = 'block';
+            loadParticipants(currentPollId);
+            fetch(`/polls/${currentPollId}`)
+                .then(response => response.json())
+                .then(data => {
+                    toggleVotingButton.textContent = data.votingOpen ? 'Vote Stop' : 'Vote Start';
+                    toggleVotingButton.style.backgroundColor = data.votingOpen ? 'green' : 'red';
+                });
+        } else {
+            participantManagement.style.display = 'none';
+        }
+    });
 
-    const loadVotingStatus = () => {
-        fetch('/voting-status')
-            .then(response => response.json())
-            .then(data => {
-                updateToggleButton(data.votingOpen);
-            })
-            .catch(error => {
-                console.error('Error loading voting status:', error);
-            });
-    };
-
+    pollForm.addEventListener('submit', addPoll);
+    participantForm.addEventListener('submit', addParticipant);
     toggleVotingButton.addEventListener('click', toggleVoting);
-    form.addEventListener('submit', addParticipant);
-    loadParticipants();
-    loadVotingStatus();
+    loadPolls();
 });
