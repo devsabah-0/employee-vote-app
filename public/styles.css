@@ -17,16 +17,13 @@ body {
 }
 
 /* Specific Page Backgrounds */
-.landing-page {
+.landing-page, .voting-page, .votes-page, .manage-page {
     background-image: url('assets/images/placeholder.svg');
-}
-
-.voting-page, .votes-page, .manage-page {
-    background-image: url('assets/images/placeholder.svg');
+    background-size: cover; /* Ensure the SVG fills the background */
 }
 
 /* Container Styles */
-.container {
+.container, .landing-container {
     max-width: 900px;
     margin: 0 auto;
     text-align: center;
@@ -158,4 +155,15 @@ li {
 
 .delete-button:hover {
     background-color: #c82333;
+}
+
+.toggle-button {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 0 10px red; /* Default to red glow */
 }

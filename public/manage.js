@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('participant-form');
     const participantList = document.getElementById('participant-list');
+    const toggleVotingButton = document.getElementById('toggle-voting');
 
     const loadParticipants = () => {
         fetch('/participants')
@@ -16,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                     const deleteButton = document.createElement('button');
                     deleteButton.textContent = 'Delete';
+                    deleteButton.className = 'delete-button';
                     deleteButton.onclick = () => deleteParticipant(participant.id);
                     li.appendChild(deleteButton);
                     participantList.appendChild(li);
@@ -34,12 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST',
             body: formData
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(() => {
             form.reset();
             loadParticipants();
@@ -57,6 +54,36 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     };
 
+    const toggleVoting = () => {
+        fetch('/toggle-voting', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                updateToggleButton(data.votingOpen);
+            })
+            .catch(error => {
+                console.error('Error toggling voting:', error);
+            });
+    };
+
+    const updateToggleButton = (votingOpen) => {
+        toggleVotingButton.textContent = votingOpen ? 'Vote Stop' : 'Vote Start';
+        toggleVotingButton.style.backgroundColor = votingOpen ? 'green' : 'red';
+        toggleVotingButton.style.boxShadow = votingOpen ? '0 0 10px green' : '0 0 10px red';
+    };
+
+    const loadVotingStatus = () => {
+        fetch('/voting-status')
+            .then(response => response.json())
+            .then(data => {
+                updateToggleButton(data.votingOpen);
+            })
+            .catch(error => {
+                console.error('Error loading voting status:', error);
+            });
+    };
+
+    toggleVotingButton.addEventListener('click', toggleVoting);
     form.addEventListener('submit', addParticipant);
     loadParticipants();
+    loadVotingStatus();
 });

@@ -42,6 +42,15 @@ db.serialize(() => {
         imagePath TEXT NOT NULL,
         votes INTEGER DEFAULT 0
     )`);
+
+    // Create a table to store application settings
+    db.run(`CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT
+    )`);
+
+    // Initialize voting status if not set
+    db.run(`INSERT OR IGNORE INTO settings (key, value) VALUES ('votingOpen', 'false')`);
 });
 
 // GET route to retrieve all participants
@@ -51,6 +60,32 @@ app.get('/participants', (req, res) => {
             return res.status(500).send(err.message);
         }
         res.json(rows);
+    });
+});
+
+// GET route to check voting status
+app.get('/voting-status', (req, res) => {
+    db.get(`SELECT value FROM settings WHERE key = 'votingOpen'`, (err, row) => {
+        if (err) {
+            return res.status(500).send(err.message);
+        }
+        res.json({ votingOpen: row.value === 'true' });
+    });
+});
+
+// POST route to toggle voting status
+app.post('/toggle-voting', (req, res) => {
+    db.get(`SELECT value FROM settings WHERE key = 'votingOpen'`, (err, row) => {
+        if (err) {
+            return res.status(500).send(err.message);
+        }
+        const newStatus = row.value === 'true' ? 'false' : 'true';
+        db.run(`UPDATE settings SET value = ? WHERE key = 'votingOpen'`, newStatus, (err) => {
+            if (err) {
+                return res.status(500).send(err.message);
+            }
+            res.json({ votingOpen: newStatus === 'true' });
+        });
     });
 });
 
@@ -70,15 +105,23 @@ app.post('/participants', upload.single('image'), (req, res) => {
 
 // PUT route to increment votes for a participant
 app.put('/participants/:id/vote', (req, res) => {
-    const { id } = req.params;
-    console.log(`Incrementing vote for participant ID: ${id}`);
-    db.run(`UPDATE participants SET votes = votes + 1 WHERE id = ?`, id, function(err) {
+    db.get(`SELECT value FROM settings WHERE key = 'votingOpen'`, (err, row) => {
         if (err) {
-            console.error('Database error:', err.message);
             return res.status(500).send(err.message);
         }
-        console.log(`Vote successfully incremented for participant ID: ${id}`);
-        res.status(204).send(); // Use 204 No Content to indicate success without a response body
+        if (row.value !== 'true') {
+            return res.status(403).send('Voting is currently closed.');
+        }
+        const { id } = req.params;
+        console.log(`Incrementing vote for participant ID: ${id}`);
+        db.run(`UPDATE participants SET votes = votes + 1 WHERE id = ?`, id, function(err) {
+            if (err) {
+                console.error('Database error:', err.message);
+                return res.status(500).send(err.message);
+            }
+            console.log(`Vote successfully incremented for participant ID: ${id}`);
+            res.status(204).send();
+        });
     });
 });
 

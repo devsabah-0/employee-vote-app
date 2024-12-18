@@ -12,6 +12,15 @@ db.serialize(() => {
         imagePath TEXT NOT NULL,
         votes INTEGER DEFAULT 0
     )`);
+
+    // Create a table to store application settings
+    db.run(`CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT
+    )`);
+
+    // Initialize voting status if not set
+    db.run(`INSERT OR IGNORE INTO settings (key, value) VALUES ('votingOpen', 'false')`);
 });
 
 module.exports = db;
