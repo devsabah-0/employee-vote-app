@@ -81,7 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const deleteParticipant = (pollId, participantId) => {
+    // Define the deleteParticipant function in the global scope
+    window.deleteParticipant = (pollId, participantId) => {
         fetch(`/polls/${pollId}/participants/${participantId}`, { method: 'DELETE' })
             .then(() => loadParticipants(pollId))
             .catch(error => {
@@ -96,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 toggleVotingButton.textContent = data.votingOpen ? 'Vote Stop' : 'Vote Start';
-                toggleVotingButton.style.backgroundColor = data.votingOpen ? 'green' : 'red';
+                toggleVotingButton.style.backgroundColor = data.votingOpen ? 'red' : 'green';
             })
             .catch(error => {
                 console.error('Error toggling voting:', error);
@@ -107,15 +108,17 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPollId = event.target.value;
         if (currentPollId) {
             participantManagement.style.display = 'block';
+            toggleVotingButton.style.display = 'inline-block';
             loadParticipants(currentPollId);
             fetch(`/polls/${currentPollId}`)
                 .then(response => response.json())
                 .then(data => {
                     toggleVotingButton.textContent = data.votingOpen ? 'Vote Stop' : 'Vote Start';
-                    toggleVotingButton.style.backgroundColor = data.votingOpen ? 'green' : 'red';
+                    toggleVotingButton.style.backgroundColor = data.votingOpen ? 'red' : 'green';
                 });
         } else {
             participantManagement.style.display = 'none';
+            toggleVotingButton.style.display = 'none';
         }
     });
 

@@ -35,6 +35,41 @@ h1 {
     color: #00bcd4;
 }
 
+/* Poll Controls */
+.poll-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#poll-selector {
+    margin-right: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: #ffffff;
+    color: #000;
+}
+
+.toggle-button {
+    padding: 10px 20px;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-button.vote-start {
+    background-color: green;
+}
+
+.toggle-button.vote-stop {
+    background-color: red;
+}
+
 /* Form Styles */
 form {
     margin-bottom: 20px;
@@ -95,15 +130,4 @@ li {
 
 .delete-button:hover {
     background-color: #c82333;
-}
-
-.toggle-button {
-    margin-bottom: 20px;
-    padding: 10px 20px;
-    color: #ffffff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s, box-shadow 0.3s;
-    box-shadow: 0 0 10px red; /* Default to red glow */
 }

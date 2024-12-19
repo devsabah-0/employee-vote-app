@@ -14,11 +14,13 @@
             <input type="text" id="poll-name" name="poll-name" placeholder="Poll Name" required>
             <button type="submit">Create Poll</button>
         </form>
-        <select id="poll-selector">
-            <option value="">Select a poll to manage</option>
-        </select>
+        <div class="poll-controls">
+            <select id="poll-selector">
+                <option value="">Select a poll to manage</option>
+            </select>
+            <button id="toggle-voting" class="toggle-button" style="display: none;">Vote Start</button>
+        </div>
         <div id="participant-management" style="display: none;">
-            <button id="toggle-voting" class="toggle-button">Vote Start</button>
             <form id="participant-form" enctype="multipart/form-data">
                 <input type="text" name="name" placeholder="Name" required>
                 <input type="text" name="designation" placeholder="Designation" required>
@@ -28,7 +30,7 @@
                 <button type="submit">Add Participant</button>
             </form>
             <ul id="participant-list"></ul>
-        </div>
+        </div ```html
     </div>
     <script src="manage.js"></script>
 </body>
