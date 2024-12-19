@@ -11,20 +11,22 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    height: 100vh;
+    background-attachment: fixed;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Align items to the top */
+    overflow-y: auto; /* Enable vertical scrolling */
 }
 
 /* Container Styles */
 .landing-container {
     max-width: 900px;
-    margin: 0 auto;
+    margin: 20px auto;
     text-align: center;
     padding: 40px;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(15px);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
     border-radius: 15px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
 }
@@ -47,7 +49,7 @@ h1 {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 0; /* Remove padding to ensure full button coverage */
+    padding: 20px;
     transition: background 0.3s, transform 0.3s;
 }
 
@@ -57,16 +59,16 @@ h1 {
 }
 
 .link-button {
-    display: block; /* Ensure the button fills the container */
-    width: 100%; /* Full width to fill the container */
+    display: block;
+    width: 100%;
     text-decoration: none;
     color: #ffffff;
     background-color: #00bcd4;
-    padding: 15px 0; /* Adjust padding to fill the button */
+    padding: 15px 0;
     border-radius: 8px;
     font-size: 1.2em;
     transition: background-color 0.3s;
-    text-align: center; /* Center text horizontally */
+    text-align: center;
 }
 
 .link-button:hover {

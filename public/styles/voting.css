@@ -11,16 +11,18 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    height: 100vh;
+    background-attachment: fixed;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    overflow-y: auto;
 }
 
-/* Container Styles */
+/* Container styles */
 .container {
     max-width: 900px;
-    margin: 0 auto;
+    margin: 20px auto;
     text-align: center;
     padding: 20px;
     background: rgba(0, 0, 0, 0.7);

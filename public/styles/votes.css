@@ -11,16 +11,18 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    height: 100vh;
+    background-attachment: fixed;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    overflow-y: auto;
 }
 
 /* Container Styles */
 .container {
     max-width: 900px;
-    margin: 0 auto;
+    margin: 20px auto;
     text-align: center;
     padding: 20px;
     background: rgba(0, 0, 0, 0.7);
@@ -40,7 +42,7 @@ h1 {
     margin-bottom: 20px;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(10px);
-   border-radius: 8px;
+    border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 10px;
     transition: background 0.3s, transform 0.3s;
